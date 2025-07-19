@@ -144,6 +144,11 @@ def init_db():
 # Initialize database on startup
 init_db()
 
+# Alternative initialization for Railway
+@app.before_first_request
+def initialize_database():
+    init_db()
+
 # User Model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
