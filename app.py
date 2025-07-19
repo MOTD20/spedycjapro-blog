@@ -148,9 +148,6 @@ def init_db():
             except Exception as e2:
                 print(f"❌ Error creating database tables (second attempt): {e2}")
 
-# Initialize database on startup
-init_db()
-
 # Alternative initialization for Railway
 def initialize_database():
     init_db()
@@ -161,6 +158,12 @@ def before_request():
     if not hasattr(app, '_database_initialized'):
         initialize_database()
         app._database_initialized = True
+
+# Initialize database for Railway (module level)
+try:
+    init_db()
+except Exception as e:
+    print(f"❌ Error during module-level initialization: {e}")
 
 # User Model
 class User(db.Model):
@@ -484,6 +487,9 @@ def admin_toggle_admin(user_id):
     return redirect(url_for('admin_users'))
 
 if __name__ == '__main__':
+    # Initialize database on startup
+    init_db()
+    
     # Development
     if app.debug:
         app.run(debug=True, host='0.0.0.0', port=8000)
