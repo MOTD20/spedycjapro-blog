@@ -333,6 +333,8 @@ def admin_toggle_admin(user_id):
 if __name__ == '__main__':
     with app.app_context():
         try:
+            # Drop all tables and recreate them
+            db.drop_all()
             db.create_all()
             
             # Create admin user if not exists
