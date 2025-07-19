@@ -359,6 +359,7 @@ def post_detail(slug):
 
 # Admin Routes
 @app.route('/admin')
+@app.route('/admin/')
 @admin_required
 def admin_dashboard():
     total_posts = Post.query.count()
@@ -373,6 +374,7 @@ def admin_dashboard():
                          recent_posts=recent_posts)
 
 @app.route('/admin/posts')
+@app.route('/admin/posts/')
 @admin_required
 def admin_posts():
     posts = Post.query.order_by(Post.created_at.desc()).all()
@@ -451,6 +453,7 @@ def admin_delete_post(post_id):
     return redirect(url_for('admin_posts'))
 
 @app.route('/admin/users')
+@app.route('/admin/users/')
 @admin_required
 def admin_users():
     users = User.query.order_by(User.created_at.desc()).all()
