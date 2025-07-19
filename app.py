@@ -14,155 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# Initialize database
-def init_db():
-    with app.app_context():
-        try:
-            # Check if tables exist first
-            inspector = inspect(db.engine)
-            existing_tables = inspector.get_table_names()
-            
-            if not existing_tables:
-                # Create tables if they don't exist
-                db.create_all()
-                print("✅ Database tables created successfully")
-            else:
-                print("✅ Database tables already exist")
-            
-            # Create admin user if not exists
-            admin_user = User.query.filter_by(username='admin').first()
-            if not admin_user:
-                admin_user = User(
-                    username='admin',
-                    email='admin@spedycjapro.pl',
-                    first_name='Administrator',
-                    last_name='Systemu',
-                    is_admin=True
-                )
-                admin_user.set_password('admin123')
-                db.session.add(admin_user)
-                db.session.commit()
-                print("✅ Admin user created: admin / admin123")
-            
-            # Create sample posts if none exist
-            try:
-                if Post.query.count() == 0:
-                    sample_posts = [
-                        {
-                            'title': 'Optymalizacja tras transportowych w 2025 roku',
-                            'content': '''
-                            <h2>Wprowadzenie</h2>
-                            <p>W dobie rosnącej konkurencji i zmieniających się przepisów, optymalizacja tras jest kluczowa dla efektywności firm logistycznych.</p>
-                            
-                            <h2>Nowe technologie</h2>
-                            <p>Sztuczna inteligencja i machine learning rewolucjonizują sposób planowania tras. Algorytmy mogą teraz uwzględniać:</p>
-                            <ul>
-                                <li>Ruch drogowy w czasie rzeczywistym</li>
-                                <li>Warunki pogodowe</li>
-                                <li>Ograniczenia czasowe</li>
-                                <li>Koszty paliwa</li>
-                            </ul>
-                            
-                            <h2>Korzyści</h2>
-                            <p>Implementacja zaawansowanych systemów optymalizacji może przynieść:</p>
-                            <ul>
-                                <li>Redukcję kosztów o 15-25%</li>
-                                <li>Skrócenie czasu dostawy o 20%</li>
-                                <li>Zmniejszenie emisji CO2</li>
-                                <li>Zwiększenie satysfakcji klientów</li>
-                            </ul>
-                            ''',
-                            'excerpt': 'Poznaj najnowsze technologie optymalizacji tras transportowych i ich wpływ na efektywność logistyczną.',
-                            'category': 'Technologia',
-                            'tags': 'optymalizacja, AI, logistyka, transport',
-                            'is_published': True
-                        },
-                        {
-                            'title': 'Jak bezpiecznie przewozić ładunki niebezpieczne?',
-                            'content': '''
-                            <h2>Klasyfikacja ładunków niebezpiecznych</h2>
-                            <p>Ładunki niebezpieczne są klasyfikowane według 9 głównych klas:</p>
-                            <ol>
-                                <li>Materiały wybuchowe</li>
-                                <li>Gazy</li>
-                                <li>Ciecze łatwopalne</li>
-                                <li>Materiały stałe łatwopalne</li>
-                                <li>Materiały utleniające</li>
-                                <li>Materiały trujące</li>
-                                <li>Materiały radioaktywne</li>
-                                <li>Materiały żrące</li>
-                                <li>Różne materiały niebezpieczne</li>
-                            </ol>
-                            
-                            <h2>Wymagania prawne</h2>
-                            <p>Transport ładunków niebezpiecznych podlega ścisłym regulacjom:</p>
-                            <ul>
-                                <li>Umowa ADR (transport drogowy)</li>
-                                <li>Umowa RID (transport kolejowy)</li>
-                                <li>Umowa ADN (transport wodny śródlądowy)</li>
-                                <li>Przepisy IATA (transport lotniczy)</li>
-                            </ul>
-                            
-                            <h2>Bezpieczeństwo</h2>
-                            <p>Kluczowe elementy bezpiecznego transportu:</p>
-                            <ul>
-                                <li>Odpowiednie oznakowanie</li>
-                                <li>Dokumentacja transportowa</li>
-                                <li>Wyszkolony personel</li>
-                                <li>Sprawne pojazdy</li>
-                                <li>Plan awaryjny</li>
-                            </ul>
-                            ''',
-                            'excerpt': 'Kompleksowy przewodnik po bezpiecznym transporcie ładunków niebezpiecznych zgodnie z przepisami ADR.',
-                            'category': 'Bezpieczeństwo',
-                            'tags': 'ADR, ładunki niebezpieczne, bezpieczeństwo, transport',
-                            'is_published': True
-                        }
-                    ]
-                    
-                    for post_data in sample_posts:
-                        post = Post(
-                            title=post_data['title'],
-                            slug=post_data['title'].lower().replace(' ', '-').replace('?', '').replace(':', '').replace(',', ''),
-                            content=post_data['content'],
-                            excerpt=post_data['excerpt'],
-                            category=post_data['category'],
-                            tags=post_data['tags'],
-                            author_id=admin_user.id,
-                            is_published=post_data['is_published']
-                        )
-                        db.session.add(post)
-                    
-                    db.session.commit()
-                    print("✅ Sample posts created")
-            except Exception as e:
-                print(f"❌ Error creating sample posts: {e}")
-                db.session.rollback()
-                
-        except Exception as e:
-            print(f"❌ Error creating database tables: {e}")
-            # Try to create tables without dropping
-            try:
-                db.create_all()
-                print("✅ Database tables created (without dropping)")
-            except Exception as e2:
-                print(f"❌ Error creating database tables (second attempt): {e2}")
 
-# Alternative initialization for Railway
-def initialize_database():
-    init_db()
-
-# Initialize database on first request
-@app.before_request
-def before_request():
-    if not hasattr(app, '_database_initialized'):
-        try:
-            initialize_database()
-            app._database_initialized = True
-            print("✅ Database initialized via before_request")
-        except Exception as e:
-            print(f"❌ Error in before_request initialization: {e}")
-            # Don't set _database_initialized to False to avoid infinite retries
 
 
 
@@ -489,17 +341,15 @@ def admin_toggle_admin(user_id):
 
 
 
-# Flask CLI commands
-@app.cli.command('init-db')
-def init_db_command():
-    """Initialize the database."""
-    init_db()
-    print('✅ Database initialized!')
 
-@app.cli.command('create-admin')
-def create_admin_command():
-    """Create admin user."""
+
+# Initialize database for Railway (simple approach)
+try:
     with app.app_context():
+        db.create_all()
+        print("✅ Database tables created via simple approach")
+        
+        # Create admin user if not exists
         admin_user = User.query.filter_by(username='admin').first()
         if not admin_user:
             admin_user = User(
@@ -512,14 +362,64 @@ def create_admin_command():
             admin_user.set_password('admin123')
             db.session.add(admin_user)
             db.session.commit()
-            print('✅ Admin user created: admin / admin123')
-        else:
-            print('✅ Admin user already exists')
+            print("✅ Admin user created: admin / admin123")
+        
+        # Create sample posts if none exist
+        if Post.query.count() == 0:
+            sample_posts = [
+                {
+                    'title': 'Optymalizacja tras transportowych w 2024 roku',
+                    'content': 'W dzisiejszych czasach optymalizacja tras transportowych jest kluczowa dla efektywności biznesu...',
+                    'excerpt': 'Poznaj najnowsze metody optymalizacji tras transportowych i zwiększ efektywność swojej firmy.',
+                    'category': 'Logistyka',
+                    'tags': 'transport, optymalizacja, logistyka',
+                    'image_url': 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=800',
+                    'is_published': True
+                },
+                {
+                    'title': 'Bezpieczeństwo w transporcie międzynarodowym',
+                    'content': 'Transport międzynarodowy wiąże się z wieloma wyzwaniami związanymi z bezpieczeństwem...',
+                    'excerpt': 'Dowiedz się jak zapewnić bezpieczeństwo w transporcie międzynarodowym.',
+                    'category': 'Bezpieczeństwo',
+                    'tags': 'bezpieczeństwo, transport międzynarodowy',
+                    'image_url': 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800',
+                    'is_published': True
+                },
+                {
+                    'title': 'Nowoczesne technologie w spedycji',
+                    'content': 'Technologie takie jak IoT, AI i blockchain rewolucjonizują branżę spedycyjną...',
+                    'excerpt': 'Poznaj najnowsze technologie, które zmieniają branżę spedycyjną.',
+                    'category': 'Technologia',
+                    'tags': 'technologia, IoT, AI, blockchain',
+                    'image_url': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800',
+                    'is_published': True
+                }
+            ]
+            
+            for post_data in sample_posts:
+                slug = post_data['title'].lower().replace(' ', '-').replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ń', 'n').replace('ó', 'o').replace('ś', 's').replace('ź', 'z').replace('ż', 'z')
+                slug = ''.join(c for c in slug if c.isalnum() or c == '-')
+                
+                post = Post(
+                    title=post_data['title'],
+                    slug=slug,
+                    content=post_data['content'],
+                    excerpt=post_data['excerpt'],
+                    category=post_data['category'],
+                    tags=post_data['tags'],
+                    image_url=post_data['image_url'],
+                    author_id=admin_user.id,
+                    is_published=post_data['is_published']
+                )
+                db.session.add(post)
+            
+            db.session.commit()
+            print("✅ Sample posts created")
+        
+except Exception as e:
+    print(f"❌ Error during module-level initialization: {e}")
 
 if __name__ == '__main__':
-    # Initialize database on startup
-    init_db()
-    
     # Development
     if app.debug:
         app.run(debug=True, host='0.0.0.0', port=8000)
