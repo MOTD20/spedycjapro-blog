@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - SpedycjaPro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Modern Header -->
+    <header class="header-modern">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                    <div class="brand-icon me-2">
+                        <i class="fas fa-truck-moving"></i>
+                    </div>
+                    <span class="fw-bold fs-4">SpedycjaPro</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ url_for('index') }}">
+                                <i class="fas fa-home me-1"></i>Strona główna
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold active" href="{{ url_for('blog') }}">
+                                <i class="fas fa-newspaper me-1"></i>Blog
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ url_for('porady') }}">
+                                <i class="fas fa-lightbulb me-1"></i>Porady
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ url_for('kontakt') }}">
+                                <i class="fas fa-envelope me-1"></i>Kontakt
+                            </a>
+                        </li>
+                        {% if session.user_id %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fw-semibold" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>{{ session.first_name }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('profile') }}">
+                                    <i class="fas fa-user-circle me-2"></i>Profil
+                                </a></li>
+                                {% if session.is_admin %}
+                                <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="fas fa-cog me-2"></i>Panel Admina
+                                </a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Wyloguj
+                                </a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Logowanie
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ url_for('register') }}">
+                                <i class="fas fa-user-plus me-1"></i>Rejestracja
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Blog Hero Section -->
+    <section class="blog-hero py-5">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8">
+                    <div class="blog-hero-content">
+                        <h1 class="display-4 fw-bold mb-4">
+                            <i class="fas fa-newspaper text-primary me-3"></i>
+                            Blog SpedycjaPro
+                        </h1>
+                        <p class="lead text-muted mb-5">
+                            Odkryj najnowsze trendy, porady i innowacje w branży transportowej. 
+                            Ekspercka wiedza na wyciągnięcie ręki!
+                        </p>
+                        <div class="blog-stats row g-4">
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <i class="fas fa-file-alt text-primary mb-2"></i>
+                                    <h4 class="fw-bold">{{ posts.total }}</h4>
+                                    <p class="text-muted">Artykułów</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <i class="fas fa-users text-success mb-2"></i>
+                                    <h4 class="fw-bold">1000+</h4>
+                                    <p class="text-muted">Czytelników</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <i class="fas fa-calendar text-warning mb-2"></i>
+                                    <h4 class="fw-bold">2025</h4>
+                                    <p class="text-muted">Rok publikacji</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="py-5">
+        <div class="container">
+            <!-- Search and Filter Section -->
+            <div class="row mb-5">
+                <div class="col-lg-8">
+                    <div class="search-box">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Szukaj artykułów...">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="filter-box">
+                        <select class="form-select" id="categoryFilter">
+                            <option value="">Wszystkie kategorie</option>
+                            <option value="Optymalizacja">Optymalizacja</option>
+                            <option value="Bezpieczeństwo">Bezpieczeństwo</option>
+                            <option value="Trendy">Trendy</option>
+                            <option value="E-commerce">E-commerce</option>
+                            <option value="Ekologia">Ekologia</option>
+                            <option value="Technologia">Technologia</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Posts Grid -->
+            <div class="row g-4" id="blogPosts">
+                {% for post in posts.items %}
+                <div class="col-lg-4 col-md-6 blog-post-item" data-category="{{ post.category }}">
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <img src="{{ post.image_url }}" alt="{{ post.title }}" class="img-fluid">
+                            <div class="blog-badge">{{ post.category }}</div>
+                        </div>
+                        <div class="blog-content">
+                            <div class="blog-meta">
+                                <span class="date">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ post.created_at.strftime('%d.%m.%Y') }}
+                                </span>
+                                <span class="views">
+                                    <i class="fas fa-eye me-1"></i>
+                                    {{ post.views }}
+                                </span>
+                            </div>
+                            <h3 class="blog-title">
+                                <a href="{{ url_for('post_detail', slug=post.slug) }}">{{ post.title }}</a>
+                            </h3>
+                            <p class="blog-excerpt">{{ post.excerpt }}</p>
+                            <div class="blog-footer">
+                                <div class="blog-author">
+                                    <i class="fas fa-user me-1"></i>
+                                    {{ post.author.first_name }} {{ post.author.last_name }}
+                                </div>
+                                <a href="{{ url_for('post_detail', slug=post.slug) }}" class="read-more">
+                                    Czytaj dalej <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if posts.pages > 1 %}
+            <div class="row mt-5">
+                <div class="col-12">
+                    <nav aria-label="Blog pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if posts.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('blog', page=posts.prev_num) }}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for page_num in posts.iter_pages() %}
+                                {% if page_num %}
+                                    {% if page_num != posts.page %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('blog', page=page_num) }}">{{ page_num }}</a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                    {% endif %}
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if posts.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('blog', page=posts.next_num) }}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Newsletter Section -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="newsletter-card text-center">
+                        <div class="newsletter-content">
+                            <h3 class="fw-bold mb-3">
+                                <i class="fas fa-envelope-open-text text-primary me-2"></i>
+                                Bądź na bieżąco!
+                            </h3>
+                            <p class="text-muted mb-4">
+                                Zapisz się do newslettera i otrzymuj najnowsze artykuły prosto na swoją skrzynkę.
+                            </p>
+                            <form class="newsletter-form">
+                                <div class="row justify-content-center">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input type="email" class="form-control" placeholder="twoj@email.pl" required>
+                                            <button class="btn btn-primary" type="submit">
+                                                <i class="fas fa-paper-plane me-2"></i>Zapisz się
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modern Footer -->
+    <footer class="footer-modern">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="footer-brand mb-3">
+                        <div class="brand-icon me-2">
+                            <i class="fas fa-truck-moving"></i>
+                        </div>
+                        <span class="fw-bold fs-4">SpedycjaPro</span>
+                    </div>
+                    <p class="text-muted mb-3">Najbardziej innowacyjny blog o transporcie i logistyce w Polsce.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="footer-contact">
+                        <h5 class="fw-bold mb-3">Kontakt</h5>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope me-2"></i>
+                            <a href="mailto:kontakt@spedycjapro.pl">kontakt@spedycjapro.pl</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone me-2"></i>
+                            <a href="tel:+48123456789">+48 123 456 789</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            <span>Warszawa, Polska</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0 text-muted">© 2025 SpedycjaPro. Wszystkie prawa zastrzeżone.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Search and filter functionality
+        document.getElementById('searchInput').addEventListener('input', filterPosts);
+        document.getElementById('categoryFilter').addEventListener('change', filterPosts);
+
+        function filterPosts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const posts = document.querySelectorAll('.blog-post-item');
+
+            posts.forEach(post => {
+                const title = post.querySelector('.blog-title a').textContent.toLowerCase();
+                const excerpt = post.querySelector('.blog-excerpt').textContent.toLowerCase();
+                const category = post.getAttribute('data-category');
+
+                const matchesSearch = title.includes(searchTerm) || excerpt.includes(searchTerm);
+                const matchesCategory = !categoryFilter || category === categoryFilter;
+
+                if (matchesSearch && matchesCategory) {
+                    post.style.display = 'block';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+        }
+
+        // Newsletter form
+        document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            
+            // Show success message
+            showNotification('Dziękujemy za zapisanie się do newslettera! 📧', 'success');
+            this.reset();
+        });
+    </script>
+</body>
+</html> 

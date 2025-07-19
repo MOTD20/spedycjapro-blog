@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edytuj artykuł - Panel Admina</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Summernote CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+</head>
+<body class="admin-body">
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                    <div class="brand-icon me-2">
+                        <i class="fas fa-truck-moving"></i>
+                    </div>
+                    <span class="fw-bold fs-4">SpedycjaPro Admin</span>
+                </a>
+                
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                    </a>
+                    <a class="nav-link" href="{{ url_for('index') }}">
+                        <i class="fas fa-home me-1"></i>Strona główna
+                    </a>
+                    <a class="nav-link" href="{{ url_for('logout') }}">
+                        <i class="fas fa-sign-out-alt me-1"></i>Wyloguj
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h5 class="fw-bold text-white">
+                    <i class="fas fa-cog me-2"></i>Panel Admina
+                </h5>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('admin_posts') }}">
+                            <i class="fas fa-newspaper me-2"></i>Artykuły
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_users') }}">
+                            <i class="fas fa-users me-2"></i>Użytkownicy
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="container-fluid">
+                <!-- Page Header -->
+                <div class="page-header mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="h2 fw-bold">
+                                <i class="fas fa-edit me-2"></i>Edytuj artykuł
+                            </h1>
+                            <p class="text-muted">Edytuj artykuł: {{ post.title }}</p>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('admin_posts') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Powrót do listy
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST" class="post-form">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <!-- Title -->
+                                    <div class="mb-4">
+                                        <label for="title" class="form-label fw-bold">
+                                            <i class="fas fa-heading me-2"></i>Tytuł artykułu
+                                        </label>
+                                        <input type="text" class="form-control form-control-lg" id="title" name="title" 
+                                               value="{{ post.title }}" placeholder="Wprowadź tytuł artykułu..." required>
+                                    </div>
+
+                                    <!-- Content -->
+                                    <div class="mb-4">
+                                        <label for="content" class="form-label fw-bold">
+                                            <i class="fas fa-edit me-2"></i>Treść artykułu
+                                        </label>
+                                        <textarea class="form-control" id="content" name="content" rows="15" 
+                                                  placeholder="Wprowadź treść artykułu..." required>{{ post.content }}</textarea>
+                                    </div>
+
+                                    <!-- Excerpt -->
+                                    <div class="mb-4">
+                                        <label for="excerpt" class="form-label fw-bold">
+                                            <i class="fas fa-quote-left me-2"></i>Krótki opis (excerpt)
+                                        </label>
+                                        <textarea class="form-control" id="excerpt" name="excerpt" rows="3" 
+                                                  placeholder="Krótki opis artykułu (maksymalnie 300 znaków)...">{{ post.excerpt }}</textarea>
+                                        <div class="form-text">Ten opis będzie wyświetlany na liście artykułów</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <!-- Publish Settings -->
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            <h6 class="fw-bold mb-0">
+                                                <i class="fas fa-cog me-2"></i>Ustawienia publikacji
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-check form-switch mb-3">
+                                                <input class="form-check-input" type="checkbox" id="is_published" name="is_published" 
+                                                       {% if post.is_published %}checked{% endif %}>
+                                                <label class="form-check-label fw-semibold" for="is_published">
+                                                    Opublikuj od razu
+                                                </label>
+                                            </div>
+                                            <div class="alert alert-info">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                Jeśli nie zaznaczysz tej opcji, artykuł zostanie zapisany jako szkic.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Category -->
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            <h6 class="fw-bold mb-0">
+                                                <i class="fas fa-folder me-2"></i>Kategoria
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <select class="form-select" id="category" name="category" required>
+                                                <option value="">Wybierz kategorię</option>
+                                                <option value="Optymalizacja" {% if post.category == 'Optymalizacja' %}selected{% endif %}>Optymalizacja</option>
+                                                <option value="Bezpieczeństwo" {% if post.category == 'Bezpieczeństwo' %}selected{% endif %}>Bezpieczeństwo</option>
+                                                <option value="Trendy" {% if post.category == 'Trendy' %}selected{% endif %}>Trendy</option>
+                                                <option value="E-commerce" {% if post.category == 'E-commerce' %}selected{% endif %}>E-commerce</option>
+                                                <option value="Ekologia" {% if post.category == 'Ekologia' %}selected{% endif %}>Ekologia</option>
+                                                <option value="Technologia" {% if post.category == 'Technologia' %}selected{% endif %}>Technologia</option>
+                                                <option value="Ogólne" {% if post.category == 'Ogólne' %}selected{% endif %}>Ogólne</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tags -->
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            <h6 class="fw-bold mb-0">
+                                                <i class="fas fa-tags me-2"></i>Tagi
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <input type="text" class="form-control" id="tags" name="tags" 
+                                                   value="{{ post.tags }}" placeholder="transport, logistyka, spedycja">
+                                            <div class="form-text">Oddziel tagi przecinkami</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Featured Image -->
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            <h6 class="fw-bold mb-0">
+                                                <i class="fas fa-image me-2"></i>Obraz główny
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <input type="url" class="form-control" id="image_url" name="image_url" 
+                                                   value="{{ post.image_url }}" placeholder="https://example.com/image.jpg">
+                                            <div class="form-text">Wklej URL obrazu</div>
+                                            
+                                            <!-- Image Preview -->
+                                            <div id="imagePreview" class="mt-3 {% if not post.image_url %}d-none{% endif %}">
+                                                <img id="previewImg" src="{{ post.image_url }}" alt="Preview" class="img-fluid rounded">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Post Info -->
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            <h6 class="fw-bold mb-0">
+                                                <i class="fas fa-info-circle me-2"></i>Informacje o artykule
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="info-item d-flex justify-content-between mb-2">
+                                                <span>Autor:</span>
+                                                <strong>{{ post.author.first_name }} {{ post.author.last_name }}</strong>
+                                            </div>
+                                            <div class="info-item d-flex justify-content-between mb-2">
+                                                <span>Utworzono:</span>
+                                                <strong>{{ post.created_at.strftime('%d.%m.%Y %H:%M') }}</strong>
+                                            </div>
+                                            <div class="info-item d-flex justify-content-between mb-2">
+                                                <span>Ostatnia edycja:</span>
+                                                <strong>{{ post.updated_at.strftime('%d.%m.%Y %H:%M') }}</strong>
+                                            </div>
+                                            <div class="info-item d-flex justify-content-between">
+                                                <span>Wyświetlenia:</span>
+                                                <strong>{{ post.views }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Buttons -->
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fas fa-save me-2"></i>Zapisz zmiany
+                                        </button>
+                                        <a href="{{ url_for('post_detail', slug=post.slug) }}" class="btn btn-outline-info" target="_blank">
+                                            <i class="fas fa-eye me-2"></i>Zobacz artykuł
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Summernote JS -->
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+    
+    <script>
+        // Initialize Summernote editor
+        $(document).ready(function() {
+            $('#content').summernote({
+                height: 400,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'italic', 'clear']],
+                    ['fontname', ['fontname']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ],
+                placeholder: 'Wprowadź treść artykułu...'
+            });
+        });
+
+        // Image preview
+        document.getElementById('image_url').addEventListener('input', function() {
+            const url = this.value;
+            const preview = document.getElementById('imagePreview');
+            const img = document.getElementById('previewImg');
+            
+            if (url) {
+                img.src = url;
+                preview.classList.remove('d-none');
+            } else {
+                preview.classList.add('d-none');
+            }
+        });
+
+        // Character counter for excerpt
+        document.getElementById('excerpt').addEventListener('input', function() {
+            const maxLength = 300;
+            const currentLength = this.value.length;
+            const remaining = maxLength - currentLength;
+            
+            if (currentLength > maxLength) {
+                this.value = this.value.substring(0, maxLength);
+            }
+        });
+
+        // Form validation
+        document.querySelector('.post-form').addEventListener('submit', function(e) {
+            const title = document.getElementById('title').value.trim();
+            const content = $('#content').summernote('code').trim();
+            
+            if (!title) {
+                e.preventDefault();
+                showNotification('Tytuł jest wymagany!', 'error');
+                return;
+            }
+            
+            if (!content || content === '<p><br></p>') {
+                e.preventDefault();
+                showNotification('Treść artykułu jest wymagana!', 'error');
+                return;
+            }
+        });
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 10000; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html> 

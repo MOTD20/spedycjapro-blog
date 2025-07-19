@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Artykuły - SpedycjaPro</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <script defer src="script.js"></script>
+</head>
+<body class="d-flex flex-column min-vh-100">
+  <header class="header-glass shadow-sm py-2">
+    <div class="container d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <span class="logo-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:48px;height:48px;font-size:2rem;"><i class="fas fa-truck-moving"></i></span>
+        <h1 class="logo mb-0 ms-2">SpedycjaPro</h1>
+      </div>
+      <nav>
+        <button id="menu-toggle" aria-label="Toggle menu" class="btn btn-outline-primary d-md-none"><i class="fas fa-bars"></i></button>
+        <ul id="nav-links" class="nav-links">
+          <li><a href="index.html"><i class="fas fa-home me-1"></i>Strona główna</a></li>
+          <li><a href="artykuly.html" class="active"><i class="fas fa-newspaper me-1"></i>Artykuły</a></li>
+          <li><a href="porady.html"><i class="fas fa-lightbulb me-1"></i>Porady</a></li>
+          <li><a href="kontakt.html"><i class="fas fa-envelope me-1"></i>Kontakt</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main class="container my-5">
+    <!-- HERO SECTION -->
+    <section class="hero-section position-relative rounded-4 overflow-hidden mb-5" style="background:url('https://images.unsplash.com/photo-1515168833906-d2a3b82b3029?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; min-height:300px;">
+      <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100" style="background:rgba(13,34,53,0.65);"></div>
+      <div class="position-relative z-1 text-white p-5" style="max-width:600px;">
+        <h2 class="display-5 fw-bold mb-3">Wszystkie artykuły</h2>
+        <p class="lead mb-4">Najnowsze informacje, analizy i trendy z branży transportu i logistyki.</p>
+      </div>
+    </section>
+
+    <!-- ARTYKUŁY SECTION -->
+    <section class="my-5">
+      <h2 class="fw-bold mb-4 text-center">Wszystkie artykuły</h2>
+      <div class="row g-4">
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 article-card">
+            <img src="https://images.unsplash.com/photo-1515168833906-d2a3b82b3029?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Optymalizacja tras transportowych">
+            <div class="card-body d-flex flex-column">
+              <span class="badge bg-primary mb-2">Optymalizacja</span>
+              <h3 class="card-title h5 fw-bold">Optymalizacja tras transportowych w 2025 roku</h3>
+              <p class="card-text flex-grow-1">W dobie rosnącej konkurencji i zmieniających się przepisów, optymalizacja tras jest kluczowa dla efektywności firm logistycznych.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted"><i class="fas fa-calendar me-1"></i>15.07.2025</small>
+                <a href="#" class="read-more btn btn-primary btn-sm">Czytaj dalej <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 article-card">
+            <img src="https://images.unsplash.com/photo-1508385082359-f48b1c9b1c8d?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Ładunki niebezpieczne">
+            <div class="card-body d-flex flex-column">
+              <span class="badge bg-warning mb-2">Bezpieczeństwo</span>
+              <h3 class="card-title h5 fw-bold">Jak bezpiecznie przewozić ładunki niebezpieczne?</h3>
+              <p class="card-text flex-grow-1">Transport ładunków niebezpiecznych wymaga przestrzegania surowych zasad oraz odpowiedniego przygotowania pojazdu i personelu.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted"><i class="fas fa-calendar me-1"></i>12.07.2025</small>
+                <a href="#" class="read-more btn btn-primary btn-sm">Czytaj dalej <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 article-card">
+            <img src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Trendy w logistyce">
+            <div class="card-body d-flex flex-column">
+              <span class="badge bg-success mb-2">Trendy</span>
+              <h3 class="card-title h5 fw-bold">Trendy w logistyce na najbliższe lata</h3>
+              <p class="card-text flex-grow-1">Automatyzacja, digitalizacja i ekologia to główne kierunki rozwoju branży logistycznej.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted"><i class="fas fa-calendar me-1"></i>10.07.2025</small>
+                <a href="#" class="read-more btn btn-primary btn-sm">Czytaj dalej <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 article-card">
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="E-commerce logistyka">
+            <div class="card-body d-flex flex-column">
+              <span class="badge bg-info mb-2">E-commerce</span>
+              <h3 class="card-title h5 fw-bold">Logistyka e-commerce w 2025 roku</h3>
+              <p class="card-text flex-grow-1">Rosnący e-commerce wymaga nowych rozwiązań logistycznych. Poznaj najnowsze technologie i strategie.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted"><i class="fas fa-calendar me-1"></i>08.07.2025</small>
+                <a href="#" class="read-more btn btn-primary btn-sm">Czytaj dalej <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 article-card">
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Zielona logistyka">
+            <div class="card-body d-flex flex-column">
+              <span class="badge bg-success mb-2">Ekologia</span>
+              <h3 class="card-title h5 fw-bold">Zielona logistyka - przyszłość transportu</h3>
+              <p class="card-text flex-grow-1">Zrównoważony rozwój w logistyce to nie tylko trend, ale konieczność. Dowiedz się, jak wdrożyć ekologiczne rozwiązania.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted"><i class="fas fa-calendar me-1"></i>05.07.2025</small>
+                <a href="#" class="read-more btn btn-primary btn-sm">Czytaj dalej <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 article-card">
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Automatyzacja magazynów">
+            <div class="card-body d-flex flex-column">
+              <span class="badge bg-warning mb-2">Technologia</span>
+              <h3 class="card-title h5 fw-bold">Automatyzacja magazynów - roboty w logistyce</h3>
+              <p class="card-text flex-grow-1">Roboty i automatyzacja rewolucjonizują branżę logistyczną. Sprawdź, jak nowe technologie zmieniają magazyny.</p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <small class="text-muted"><i class="fas fa-calendar me-1"></i>03.07.2025</small>
+                <a href="#" class="read-more btn btn-primary btn-sm">Czytaj dalej <i class="fas fa-arrow-right ms-1"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer mt-auto py-4 bg-dark text-white-50">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+      <div>
+        <p class="mb-1">© 2025 SpedycjaPro. Wszystkie prawa zastrzeżone.</p>
+        <p class="mb-0">Kontakt: <a href="mailto:kontakt@spedycjapro.pl" class="text-white">kontakt@spedycjapro.pl</a> | Telefon: <a href="tel:+48123456789" class="text-white">+48 123 456 789</a></p>
+      </div>
+      <div class="social-media mt-3 mt-md-0">
+        <a href="#" aria-label="Facebook" class="text-white me-3 fs-4"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="Twitter" class="text-white me-3 fs-4"><i class="fab fa-twitter"></i></a>
+        <a href="#" aria-label="LinkedIn" class="text-white fs-4"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+    </div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>AOS.init();</script>
+</body>
+</html> 

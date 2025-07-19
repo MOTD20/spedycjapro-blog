@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administracyjny - SpedycjaPro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="admin-body">
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                    <div class="brand-icon me-2">
+                        <i class="fas fa-truck-moving"></i>
+                    </div>
+                    <span class="fw-bold fs-4">SpedycjaPro Admin</span>
+                </a>
+                
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="{{ url_for('index') }}">
+                        <i class="fas fa-home me-1"></i>Strona główna
+                    </a>
+                    <a class="nav-link" href="{{ url_for('logout') }}">
+                        <i class="fas fa-sign-out-alt me-1"></i>Wyloguj
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h5 class="fw-bold text-white">
+                    <i class="fas fa-cog me-2"></i>Panel Admina
+                </h5>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_posts') }}">
+                            <i class="fas fa-newspaper me-2"></i>Artykuły
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_users') }}">
+                            <i class="fas fa-users me-2"></i>Użytkownicy
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="container-fluid">
+                <!-- Page Header -->
+                <div class="page-header mb-4">
+                    <h1 class="h2 fw-bold">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </h1>
+                    <p class="text-muted">Witaj w panelu administracyjnym SpedycjaPro</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card bg-primary text-white">
+                            <div class="stats-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <div class="stats-content">
+                                <h3 class="fw-bold">{{ total_posts }}</h3>
+                                <p class="mb-0">Wszystkie artykuły</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card bg-success text-white">
+                            <div class="stats-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stats-content">
+                                <h3 class="fw-bold">{{ published_posts }}</h3>
+                                <p class="mb-0">Opublikowane</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card bg-warning text-white">
+                            <div class="stats-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stats-content">
+                                <h3 class="fw-bold">{{ total_users }}</h3>
+                                <p class="mb-0">Użytkownicy</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stats-card bg-info text-white">
+                            <div class="stats-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="stats-content">
+                                <h3 class="fw-bold">1,234</h3>
+                                <p class="mb-0">Wyświetlenia</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row g-4 mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="fas fa-bolt me-2"></i>Szybkie akcje
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <a href="{{ url_for('admin_new_post') }}" class="btn btn-primary w-100">
+                                            <i class="fas fa-plus me-2"></i>Nowy artykuł
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a href="{{ url_for('admin_posts') }}" class="btn btn-outline-primary w-100">
+                                            <i class="fas fa-edit me-2"></i>Edytuj artykuły
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a href="{{ url_for('admin_users') }}" class="btn btn-outline-success w-100">
+                                            <i class="fas fa-user-cog me-2"></i>Zarządzaj użytkownikami
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a href="{{ url_for('blog') }}" class="btn btn-outline-info w-100">
+                                            <i class="fas fa-eye me-2"></i>Zobacz blog
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Posts -->
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="fas fa-clock me-2"></i>Ostatnie artykuły
+                                </h5>
+                                <a href="{{ url_for('admin_posts') }}" class="btn btn-sm btn-outline-primary">
+                                    Zobacz wszystkie
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tytuł</th>
+                                                <th>Kategoria</th>
+                                                <th>Status</th>
+                                                <th>Data</th>
+                                                <th>Akcje</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for post in recent_posts %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ post.title[:50] }}{% if post.title|length > 50 %}...{% endif %}</strong>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-secondary">{{ post.category }}</span>
+                                                </td>
+                                                <td>
+                                                    {% if post.is_published %}
+                                                    <span class="badge bg-success">Opublikowany</span>
+                                                    {% else %}
+                                                    <span class="badge bg-warning">Szkic</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ post.created_at.strftime('%d.%m.%Y') }}</td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="{{ url_for('admin_edit_post', post_id=post.id) }}" 
+                                                           class="btn btn-outline-primary">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{{ url_for('post_detail', slug=post.slug) }}" 
+                                                           class="btn btn-outline-info" target="_blank">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Info -->
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>Informacje systemowe
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="system-info">
+                                    <div class="info-item d-flex justify-content-between mb-3">
+                                        <span>Wersja systemu:</span>
+                                        <strong>1.0.0</strong>
+                                    </div>
+                                    <div class="info-item d-flex justify-content-between mb-3">
+                                        <span>Ostatnia aktualizacja:</span>
+                                        <strong>19.07.2025</strong>
+                                    </div>
+                                    <div class="info-item d-flex justify-content-between mb-3">
+                                        <span>Status bazy danych:</span>
+                                        <span class="badge bg-success">Aktywna</span>
+                                    </div>
+                                    <div class="info-item d-flex justify-content-between">
+                                        <span>Wersja Flask:</span>
+                                        <strong>2.3.3</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="fas fa-chart-bar me-2"></i>Szybkie statystyki
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="quick-stats">
+                                    <div class="stat-item d-flex justify-content-between mb-3">
+                                        <span>Artykuły w tym miesiącu:</span>
+                                        <strong>5</strong>
+                                    </div>
+                                    <div class="stat-item d-flex justify-content-between mb-3">
+                                        <span>Nowi użytkownicy:</span>
+                                        <strong>12</strong>
+                                    </div>
+                                    <div class="stat-item d-flex justify-content-between mb-3">
+                                        <span>Średnie wyświetlenia:</span>
+                                        <strong>156</strong>
+                                    </div>
+                                    <div class="stat-item d-flex justify-content-between">
+                                        <span>Najpopularniejsza kategoria:</span>
+                                        <strong>Optymalizacja</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Admin dashboard functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add active class to current nav item
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Show welcome notification
+            setTimeout(() => {
+                showNotification('Witaj w panelu administracyjnym! 👋', 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

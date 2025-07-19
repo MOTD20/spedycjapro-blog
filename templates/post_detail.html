@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }} - SpedycjaPro</title>
+    <meta name="description" content="{{ post.excerpt }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Modern Header -->
+    <header class="header-modern">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                    <div class="brand-icon me-2">
+                        <i class="fas fa-truck-moving"></i>
+                    </div>
+                    <span class="fw-bold fs-4">SpedycjaPro</span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ url_for('index') }}">
+                                <i class="fas fa-home me-1"></i>Strona główna
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ url_for('blog') }}">
+                                <i class="fas fa-newspaper me-1"></i>Blog
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ url_for('porady') }}">
+                                <i class="fas fa-lightbulb me-1"></i>Porady
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ url_for('kontakt') }}">
+                                <i class="fas fa-envelope me-1"></i>Kontakt
+                            </a>
+                        </li>
+                        {% if session.user_id %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fw-semibold" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>{{ session.first_name }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('profile') }}">
+                                    <i class="fas fa-user-circle me-2"></i>Profil
+                                </a></li>
+                                {% if session.is_admin %}
+                                <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="fas fa-cog me-2"></i>Panel Admina
+                                </a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Wyloguj
+                                </a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>Logowanie
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" href="{{ url_for('register') }}">
+                                <i class="fas fa-user-plus me-1"></i>Rejestracja
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Main Content -->
+                <div class="col-lg-8">
+                    <article class="post-detail">
+                        <!-- Breadcrumb -->
+                        <nav aria-label="breadcrumb" class="mb-4">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Strona główna</a></li>
+                                <li class="breadcrumb-item"><a href="{{ url_for('blog') }}">Blog</a></li>
+                                <li class="breadcrumb-item active">{{ post.title }}</li>
+                            </ol>
+                        </nav>
+
+                        <!-- Post Header -->
+                        <header class="post-header mb-4">
+                            <div class="post-category mb-2">
+                                <span class="badge bg-primary">{{ post.category }}</span>
+                            </div>
+                            <h1 class="post-title display-5 fw-bold mb-3">{{ post.title }}</h1>
+                            <div class="post-meta d-flex align-items-center gap-4 text-muted">
+                                <div class="post-author">
+                                    <i class="fas fa-user me-1"></i>
+                                    {{ post.author.first_name }} {{ post.author.last_name }}
+                                </div>
+                                <div class="post-date">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ post.created_at.strftime('%d.%m.%Y') }}
+                                </div>
+                                <div class="post-views">
+                                    <i class="fas fa-eye me-1"></i>
+                                    {{ post.views }} wyświetleń
+                                </div>
+                            </div>
+                        </header>
+
+                        <!-- Featured Image -->
+                        {% if post.image_url %}
+                        <div class="post-image mb-4">
+                            <img src="{{ post.image_url }}" alt="{{ post.title }}" class="img-fluid rounded-4">
+                        </div>
+                        {% endif %}
+
+                        <!-- Post Content -->
+                        <div class="post-content">
+                            {{ post.content | safe }}
+                        </div>
+
+                        <!-- Post Tags -->
+                        {% if post.tags %}
+                        <div class="post-tags mt-4">
+                            <h5 class="fw-bold mb-2">Tagi:</h5>
+                            <div class="tags">
+                                {% for tag in post.tags.split(',') %}
+                                <span class="badge bg-light text-dark me-2">{{ tag.strip() }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Social Sharing -->
+                        <div class="social-sharing mt-5">
+                            <h5 class="fw-bold mb-3">Udostępnij artykuł:</h5>
+                            <div class="social-buttons">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" 
+                                   target="_blank" class="btn btn-outline-primary me-2">
+                                    <i class="fab fa-facebook-f me-2"></i>Facebook
+                                </a>
+                                <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text={{ post.title }}" 
+                                   target="_blank" class="btn btn-outline-info me-2">
+                                    <i class="fab fa-twitter me-2"></i>Twitter
+                                </a>
+                                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url }}" 
+                                   target="_blank" class="btn btn-outline-secondary me-2">
+                                    <i class="fab fa-linkedin-in me-2"></i>LinkedIn
+                                </a>
+                                <button class="btn btn-outline-success" onclick="copyToClipboard()">
+                                    <i class="fas fa-link me-2"></i>Kopiuj link
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Author Bio -->
+                        <div class="author-bio mt-5">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <div class="author-avatar">
+                                                <i class="fas fa-user-circle fa-3x text-primary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <h5 class="fw-bold">{{ post.author.first_name }} {{ post.author.last_name }}</h5>
+                                            <p class="text-muted mb-2">Ekspert w dziedzinie transportu i logistyki</p>
+                                            <p class="mb-0">Specjalista z wieloletnim doświadczeniem w branży spedycyjnej. Pasjonat nowoczesnych rozwiązań logistycznych i optymalizacji procesów transportowych.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <aside class="post-sidebar">
+                        <!-- Search Widget -->
+                        <div class="sidebar-widget mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="fw-bold mb-3">
+                                        <i class="fas fa-search me-2"></i>Szukaj
+                                    </h5>
+                                    <form action="{{ url_for('blog') }}" method="GET">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" name="q" placeholder="Szukaj artykułów...">
+                                            <button class="btn btn-primary" type="submit">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Categories Widget -->
+                        <div class="sidebar-widget mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="fw-bold mb-3">
+                                        <i class="fas fa-folder me-2"></i>Kategorie
+                                    </h5>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <a href="{{ url_for('blog') }}?category=Optymalizacja" class="text-decoration-none">
+                                                <i class="fas fa-chevron-right me-2 text-primary"></i>Optymalizacja
+                                            </a>
+                                        </li>
+                                        <li class="mb-2">
+                                            <a href="{{ url_for('blog') }}?category=Bezpieczeństwo" class="text-decoration-none">
+                                                <i class="fas fa-chevron-right me-2 text-primary"></i>Bezpieczeństwo
+                                            </a>
+                                        </li>
+                                        <li class="mb-2">
+                                            <a href="{{ url_for('blog') }}?category=Trendy" class="text-decoration-none">
+                                                <i class="fas fa-chevron-right me-2 text-primary"></i>Trendy
+                                            </a>
+                                        </li>
+                                        <li class="mb-2">
+                                            <a href="{{ url_for('blog') }}?category=E-commerce" class="text-decoration-none">
+                                                <i class="fas fa-chevron-right me-2 text-primary"></i>E-commerce
+                                            </a>
+                                        </li>
+                                        <li class="mb-2">
+                                            <a href="{{ url_for('blog') }}?category=Ekologia" class="text-decoration-none">
+                                                <i class="fas fa-chevron-right me-2 text-primary"></i>Ekologia
+                                            </a>
+                                        </li>
+                                        <li class="mb-2">
+                                            <a href="{{ url_for('blog') }}?category=Technologia" class="text-decoration-none">
+                                                <i class="fas fa-chevron-right me-2 text-primary"></i>Technologia
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Popular Posts Widget -->
+                        <div class="sidebar-widget mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="fw-bold mb-3">
+                                        <i class="fas fa-fire me-2"></i>Popularne artykuły
+                                    </h5>
+                                    <div class="popular-posts">
+                                        {% for i in range(3) %}
+                                        <div class="popular-post mb-3">
+                                            <div class="row g-2">
+                                                <div class="col-4">
+                                                    <img src="https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=100&q=80" 
+                                                         alt="Popular post" class="img-fluid rounded">
+                                                </div>
+                                                <div class="col-8">
+                                                    <h6 class="fw-semibold">
+                                                        <a href="#" class="text-decoration-none">Przykładowy popularny artykuł</a>
+                                                    </h6>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-eye me-1"></i>150 wyświetleń
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Newsletter Widget -->
+                        <div class="sidebar-widget">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h5 class="fw-bold mb-3">
+                                        <i class="fas fa-envelope me-2"></i>Newsletter
+                                    </h5>
+                                    <p class="mb-3">Otrzymuj najnowsze artykuły prosto na swoją skrzynkę!</p>
+                                    <form class="newsletter-form">
+                                        <div class="input-group">
+                                            <input type="email" class="form-control" placeholder="twoj@email.pl" required>
+                                            <button class="btn btn-light" type="submit">
+                                                <i class="fas fa-paper-plane"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            <!-- Related Posts -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h3 class="fw-bold mb-4">
+                        <i class="fas fa-thumbs-up me-2"></i>Powiązane artykuły
+                    </h3>
+                    <div class="row g-4">
+                        {% for i in range(3) %}
+                        <div class="col-lg-4 col-md-6">
+                            <article class="blog-card">
+                                <div class="blog-image">
+                                    <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=400&q=80" 
+                                         alt="Related post" class="img-fluid">
+                                    <div class="blog-badge">Bezpieczeństwo</div>
+                                </div>
+                                <div class="blog-content">
+                                    <div class="blog-meta">
+                                        <span class="date">
+                                            <i class="fas fa-calendar me-1"></i>15.07.2025
+                                        </span>
+                                        <span class="views">
+                                            <i class="fas fa-eye me-1"></i>120
+                                        </span>
+                                    </div>
+                                    <h4 class="blog-title">
+                                        <a href="#">Przykładowy powiązany artykuł</a>
+                                    </h4>
+                                    <p class="blog-excerpt">Krótki opis powiązanego artykułu...</p>
+                                    <div class="blog-footer">
+                                        <a href="#" class="read-more">
+                                            Czytaj dalej <i class="fas fa-arrow-right ms-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modern Footer -->
+    <footer class="footer-modern">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="footer-brand mb-3">
+                        <div class="brand-icon me-2">
+                            <i class="fas fa-truck-moving"></i>
+                        </div>
+                        <span class="fw-bold fs-4">SpedycjaPro</span>
+                    </div>
+                    <p class="text-muted mb-3">Najbardziej innowacyjny blog o transporcie i logistyce w Polsce.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="footer-contact">
+                        <h5 class="fw-bold mb-3">Kontakt</h5>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope me-2"></i>
+                            <a href="mailto:kontakt@spedycjapro.pl">kontakt@spedycjapro.pl</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone me-2"></i>
+                            <a href="tel:+48123456789">+48 123 456 789</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            <span>Warszawa, Polska</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p class="mb-0 text-muted">© 2025 SpedycjaPro. Wszystkie prawa zastrzeżone.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Copy to clipboard functionality
+        function copyToClipboard() {
+            navigator.clipboard.writeText(window.location.href).then(function() {
+                showNotification('Link skopiowany do schowka! 📋', 'success');
+            });
+        }
+
+        // Newsletter form
+        document.querySelectorAll('.newsletter-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input[type="email"]').value;
+                showNotification('Dziękujemy za zapisanie się do newslettera! 📧', 'success');
+                this.reset();
+            });
+        });
+
+        // Reading time estimation
+        function estimateReadingTime() {
+            const content = document.querySelector('.post-content');
+            const text = content.textContent;
+            const words = text.split(' ').length;
+            const readingTime = Math.ceil(words / 200); // 200 words per minute
+            
+            const readingTimeElement = document.createElement('div');
+            readingTimeElement.className = 'post-reading-time';
+            readingTimeElement.innerHTML = `<i class="fas fa-clock me-1"></i>${readingTime} min czytania`;
+            
+            document.querySelector('.post-meta').appendChild(readingTimeElement);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            estimateReadingTime();
+        });
+    </script>
+</body>
+</html> 
