@@ -5,6 +5,7 @@ from functools import wraps
 import os
 import sys
 from datetime import datetime
+from sqlalchemy import inspect
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-super-secret-key-change-this-in-production'
@@ -17,10 +18,16 @@ db = SQLAlchemy(app)
 def init_db():
     with app.app_context():
         try:
-            # Drop all tables and recreate them
-            db.drop_all()
-            db.create_all()
-            print("✅ Database tables created successfully")
+            # Check if tables exist first
+            inspector = inspect(db.engine)
+            existing_tables = inspector.get_table_names()
+            
+            if not existing_tables:
+                # Create tables if they don't exist
+                db.create_all()
+                print("✅ Database tables created successfully")
+            else:
+                print("✅ Database tables already exist")
             
             # Create admin user if not exists
             admin_user = User.query.filter_by(username='admin').first()
@@ -145,9 +152,15 @@ def init_db():
 init_db()
 
 # Alternative initialization for Railway
-@app.before_first_request
 def initialize_database():
     init_db()
+
+# Initialize database on first request
+@app.before_request
+def before_request():
+    if not hasattr(app, '_database_initialized'):
+        initialize_database()
+        app._database_initialized = True
 
 # User Model
 class User(db.Model):
