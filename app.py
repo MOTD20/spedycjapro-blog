@@ -487,13 +487,19 @@ def admin_toggle_admin(user_id):
     flash(f'Użytkownik {user.username} jest teraz {status}!', 'success')
     return redirect(url_for('admin_users'))
 
-# Initialize database for Railway (simple approach)
-try:
+
+
+# Flask CLI commands
+@app.cli.command('init-db')
+def init_db_command():
+    """Initialize the database."""
+    init_db()
+    print('✅ Database initialized!')
+
+@app.cli.command('create-admin')
+def create_admin_command():
+    """Create admin user."""
     with app.app_context():
-        db.create_all()
-        print("✅ Database tables created via simple approach")
-        
-        # Create admin user if not exists
         admin_user = User.query.filter_by(username='admin').first()
         if not admin_user:
             admin_user = User(
@@ -506,46 +512,9 @@ try:
             admin_user.set_password('admin123')
             db.session.add(admin_user)
             db.session.commit()
-            print("✅ Admin user created: admin / admin123")
-        
-        # Create sample posts if none exist
-        if Post.query.count() == 0:
-            sample_posts = [
-                {
-                    'title': 'Optymalizacja tras transportowych w 2025 roku',
-                    'content': '<h2>Wprowadzenie</h2><p>W dobie rosnącej konkurencji i zmieniających się przepisów, optymalizacja tras jest kluczowa dla efektywności firm logistycznych.</p>',
-                    'excerpt': 'Poznaj najnowsze technologie optymalizacji tras transportowych.',
-                    'category': 'Technologia',
-                    'tags': 'optymalizacja, AI, logistyka',
-                    'is_published': True
-                },
-                {
-                    'title': 'Jak bezpiecznie przewozić ładunki niebezpieczne?',
-                    'content': '<h2>Klasyfikacja ładunków niebezpiecznych</h2><p>Ładunki niebezpieczne są klasyfikowane według 9 głównych klas.</p>',
-                    'excerpt': 'Kompleksowy przewodnik po bezpiecznym transporcie ładunków niebezpiecznych.',
-                    'category': 'Bezpieczeństwo',
-                    'tags': 'ADR, ładunki niebezpieczne, bezpieczeństwo',
-                    'is_published': True
-                }
-            ]
-            
-            for post_data in sample_posts:
-                post = Post(
-                    title=post_data['title'],
-                    slug=post_data['title'].lower().replace(' ', '-').replace('?', '').replace(':', '').replace(',', ''),
-                    content=post_data['content'],
-                    excerpt=post_data['excerpt'],
-                    category=post_data['category'],
-                    tags=post_data['tags'],
-                    author_id=admin_user.id,
-                    is_published=post_data['is_published']
-                )
-                db.session.add(post)
-            
-            db.session.commit()
-            print("✅ Sample posts created")
-except Exception as e:
-    print(f"❌ Error during simple initialization: {e}")
+            print('✅ Admin user created: admin / admin123')
+        else:
+            print('✅ Admin user already exists')
 
 if __name__ == '__main__':
     # Initialize database on startup
