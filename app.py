@@ -343,81 +343,87 @@ def admin_toggle_admin(user_id):
 
 
 
-# Initialize database for Railway (simple approach)
-try:
-    with app.app_context():
-        db.create_all()
-        print("✅ Database tables created via simple approach")
-        
-        # Create admin user if not exists
-        admin_user = User.query.filter_by(username='admin').first()
-        if not admin_user:
-            admin_user = User(
-                username='admin',
-                email='admin@spedycjapro.pl',
-                first_name='Administrator',
-                last_name='Systemu',
-                is_admin=True
-            )
-            admin_user.set_password('admin123')
-            db.session.add(admin_user)
-            db.session.commit()
-            print("✅ Admin user created: admin / admin123")
-        
-        # Create sample posts if none exist
-        if Post.query.count() == 0:
-            sample_posts = [
-                {
-                    'title': 'Optymalizacja tras transportowych w 2024 roku',
-                    'content': 'W dzisiejszych czasach optymalizacja tras transportowych jest kluczowa dla efektywności biznesu...',
-                    'excerpt': 'Poznaj najnowsze metody optymalizacji tras transportowych i zwiększ efektywność swojej firmy.',
-                    'category': 'Logistyka',
-                    'tags': 'transport, optymalizacja, logistyka',
-                    'image_url': 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=800',
-                    'is_published': True
-                },
-                {
-                    'title': 'Bezpieczeństwo w transporcie międzynarodowym',
-                    'content': 'Transport międzynarodowy wiąże się z wieloma wyzwaniami związanymi z bezpieczeństwem...',
-                    'excerpt': 'Dowiedz się jak zapewnić bezpieczeństwo w transporcie międzynarodowym.',
-                    'category': 'Bezpieczeństwo',
-                    'tags': 'bezpieczeństwo, transport międzynarodowy',
-                    'image_url': 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800',
-                    'is_published': True
-                },
-                {
-                    'title': 'Nowoczesne technologie w spedycji',
-                    'content': 'Technologie takie jak IoT, AI i blockchain rewolucjonizują branżę spedycyjną...',
-                    'excerpt': 'Poznaj najnowsze technologie, które zmieniają branżę spedycyjną.',
-                    'category': 'Technologia',
-                    'tags': 'technologia, IoT, AI, blockchain',
-                    'image_url': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800',
-                    'is_published': True
-                }
-            ]
-            
-            for post_data in sample_posts:
-                slug = post_data['title'].lower().replace(' ', '-').replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ń', 'n').replace('ó', 'o').replace('ś', 's').replace('ź', 'z').replace('ż', 'z')
-                slug = ''.join(c for c in slug if c.isalnum() or c == '-')
+
+
+# Initialize database on first request
+@app.before_request
+def before_request():
+    if not hasattr(app, '_database_initialized'):
+        try:
+            with app.app_context():
+                db.create_all()
+                print("✅ Database tables created via before_request")
                 
-                post = Post(
-                    title=post_data['title'],
-                    slug=slug,
-                    content=post_data['content'],
-                    excerpt=post_data['excerpt'],
-                    category=post_data['category'],
-                    tags=post_data['tags'],
-                    image_url=post_data['image_url'],
-                    author_id=admin_user.id,
-                    is_published=post_data['is_published']
-                )
-                db.session.add(post)
-            
-            db.session.commit()
-            print("✅ Sample posts created")
-        
-except Exception as e:
-    print(f"❌ Error during module-level initialization: {e}")
+                # Create admin user if not exists
+                admin_user = User.query.filter_by(username='admin').first()
+                if not admin_user:
+                    admin_user = User(
+                        username='admin',
+                        email='admin@spedycjapro.pl',
+                        first_name='Administrator',
+                        last_name='Systemu',
+                        is_admin=True
+                    )
+                    admin_user.set_password('admin123')
+                    db.session.add(admin_user)
+                    db.session.commit()
+                    print("✅ Admin user created: admin / admin123")
+                
+                # Create sample posts if none exist
+                if Post.query.count() == 0:
+                    sample_posts = [
+                        {
+                            'title': 'Optymalizacja tras transportowych w 2024 roku',
+                            'content': 'W dzisiejszych czasach optymalizacja tras transportowych jest kluczowa dla efektywności biznesu...',
+                            'excerpt': 'Poznaj najnowsze metody optymalizacji tras transportowych i zwiększ efektywność swojej firmy.',
+                            'category': 'Logistyka',
+                            'tags': 'transport, optymalizacja, logistyka',
+                            'image_url': 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=800',
+                            'is_published': True
+                        },
+                        {
+                            'title': 'Bezpieczeństwo w transporcie międzynarodowym',
+                            'content': 'Transport międzynarodowy wiąże się z wieloma wyzwaniami związanymi z bezpieczeństwem...',
+                            'excerpt': 'Dowiedz się jak zapewnić bezpieczeństwo w transporcie międzynarodowym.',
+                            'category': 'Bezpieczeństwo',
+                            'tags': 'bezpieczeństwo, transport międzynarodowy',
+                            'image_url': 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800',
+                            'is_published': True
+                        },
+                        {
+                            'title': 'Nowoczesne technologie w spedycji',
+                            'content': 'Technologie takie jak IoT, AI i blockchain rewolucjonizują branżę spedycyjną...',
+                            'excerpt': 'Poznaj najnowsze technologie, które zmieniają branżę spedycyjną.',
+                            'category': 'Technologia',
+                            'tags': 'technologia, IoT, AI, blockchain',
+                            'image_url': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800',
+                            'is_published': True
+                        }
+                    ]
+                    
+                    for post_data in sample_posts:
+                        slug = post_data['title'].lower().replace(' ', '-').replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ń', 'n').replace('ó', 'o').replace('ś', 's').replace('ź', 'z').replace('ż', 'z')
+                        slug = ''.join(c for c in slug if c.isalnum() or c == '-')
+                        
+                        post = Post(
+                            title=post_data['title'],
+                            slug=slug,
+                            content=post_data['content'],
+                            excerpt=post_data['excerpt'],
+                            category=post_data['category'],
+                            tags=post_data['tags'],
+                            image_url=post_data['image_url'],
+                            author_id=admin_user.id,
+                            is_published=post_data['is_published']
+                        )
+                        db.session.add(post)
+                    
+                    db.session.commit()
+                    print("✅ Sample posts created")
+                
+            app._database_initialized = True
+        except Exception as e:
+            print(f"❌ Error in before_request initialization: {e}")
 
 if __name__ == '__main__':
     # Development
