@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import os
+import sys
 from datetime import datetime
 
 app = Flask(__name__)
@@ -336,6 +337,16 @@ if __name__ == '__main__':
             # Drop all tables and recreate them
             db.drop_all()
             db.create_all()
+            print("✅ Database tables created successfully")
+        except Exception as e:
+            print(f"❌ Error creating database tables: {e}")
+            # Try to create tables without dropping
+            try:
+                db.create_all()
+                print("✅ Database tables created (without dropping)")
+            except Exception as e2:
+                print(f"❌ Error creating database tables (second attempt): {e2}")
+                sys.exit(1)
             
             # Create admin user if not exists
             admin_user = User.query.filter_by(username='admin').first()
