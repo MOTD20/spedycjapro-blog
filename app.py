@@ -13,6 +13,137 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# Initialize database
+def init_db():
+    with app.app_context():
+        try:
+            # Drop all tables and recreate them
+            db.drop_all()
+            db.create_all()
+            print("✅ Database tables created successfully")
+            
+            # Create admin user if not exists
+            admin_user = User.query.filter_by(username='admin').first()
+            if not admin_user:
+                admin_user = User(
+                    username='admin',
+                    email='admin@spedycjapro.pl',
+                    first_name='Administrator',
+                    last_name='Systemu',
+                    is_admin=True
+                )
+                admin_user.set_password('admin123')
+                db.session.add(admin_user)
+                db.session.commit()
+                print("✅ Admin user created: admin / admin123")
+            
+            # Create sample posts if none exist
+            try:
+                if Post.query.count() == 0:
+                    sample_posts = [
+                        {
+                            'title': 'Optymalizacja tras transportowych w 2025 roku',
+                            'content': '''
+                            <h2>Wprowadzenie</h2>
+                            <p>W dobie rosnącej konkurencji i zmieniających się przepisów, optymalizacja tras jest kluczowa dla efektywności firm logistycznych.</p>
+                            
+                            <h2>Nowe technologie</h2>
+                            <p>Sztuczna inteligencja i machine learning rewolucjonizują sposób planowania tras. Algorytmy mogą teraz uwzględniać:</p>
+                            <ul>
+                                <li>Ruch drogowy w czasie rzeczywistym</li>
+                                <li>Warunki pogodowe</li>
+                                <li>Ograniczenia czasowe</li>
+                                <li>Koszty paliwa</li>
+                            </ul>
+                            
+                            <h2>Korzyści</h2>
+                            <p>Implementacja zaawansowanych systemów optymalizacji może przynieść:</p>
+                            <ul>
+                                <li>Redukcję kosztów o 15-25%</li>
+                                <li>Skrócenie czasu dostawy o 20%</li>
+                                <li>Zmniejszenie emisji CO2</li>
+                                <li>Zwiększenie satysfakcji klientów</li>
+                            </ul>
+                            ''',
+                            'excerpt': 'Poznaj najnowsze technologie optymalizacji tras transportowych i ich wpływ na efektywność logistyczną.',
+                            'category': 'Technologia',
+                            'tags': 'optymalizacja, AI, logistyka, transport',
+                            'is_published': True
+                        },
+                        {
+                            'title': 'Jak bezpiecznie przewozić ładunki niebezpieczne?',
+                            'content': '''
+                            <h2>Klasyfikacja ładunków niebezpiecznych</h2>
+                            <p>Ładunki niebezpieczne są klasyfikowane według 9 głównych klas:</p>
+                            <ol>
+                                <li>Materiały wybuchowe</li>
+                                <li>Gazy</li>
+                                <li>Ciecze łatwopalne</li>
+                                <li>Materiały stałe łatwopalne</li>
+                                <li>Materiały utleniające</li>
+                                <li>Materiały trujące</li>
+                                <li>Materiały radioaktywne</li>
+                                <li>Materiały żrące</li>
+                                <li>Różne materiały niebezpieczne</li>
+                            </ol>
+                            
+                            <h2>Wymagania prawne</h2>
+                            <p>Transport ładunków niebezpiecznych podlega ścisłym regulacjom:</p>
+                            <ul>
+                                <li>Umowa ADR (transport drogowy)</li>
+                                <li>Umowa RID (transport kolejowy)</li>
+                                <li>Umowa ADN (transport wodny śródlądowy)</li>
+                                <li>Przepisy IATA (transport lotniczy)</li>
+                            </ul>
+                            
+                            <h2>Bezpieczeństwo</h2>
+                            <p>Kluczowe elementy bezpiecznego transportu:</p>
+                            <ul>
+                                <li>Odpowiednie oznakowanie</li>
+                                <li>Dokumentacja transportowa</li>
+                                <li>Wyszkolony personel</li>
+                                <li>Sprawne pojazdy</li>
+                                <li>Plan awaryjny</li>
+                            </ul>
+                            ''',
+                            'excerpt': 'Kompleksowy przewodnik po bezpiecznym transporcie ładunków niebezpiecznych zgodnie z przepisami ADR.',
+                            'category': 'Bezpieczeństwo',
+                            'tags': 'ADR, ładunki niebezpieczne, bezpieczeństwo, transport',
+                            'is_published': True
+                        }
+                    ]
+                    
+                    for post_data in sample_posts:
+                        post = Post(
+                            title=post_data['title'],
+                            slug=post_data['title'].lower().replace(' ', '-').replace('?', '').replace(':', '').replace(',', ''),
+                            content=post_data['content'],
+                            excerpt=post_data['excerpt'],
+                            category=post_data['category'],
+                            tags=post_data['tags'],
+                            author_id=admin_user.id,
+                            is_published=post_data['is_published']
+                        )
+                        db.session.add(post)
+                    
+                    db.session.commit()
+                    print("✅ Sample posts created")
+            except Exception as e:
+                print(f"❌ Error creating sample posts: {e}")
+                db.session.rollback()
+                
+        except Exception as e:
+            print(f"❌ Error creating database tables: {e}")
+            # Try to create tables without dropping
+            try:
+                db.create_all()
+                print("✅ Database tables created (without dropping)")
+            except Exception as e2:
+                print(f"❌ Error creating database tables (second attempt): {e2}")
+
+# Initialize database on startup
+init_db()
+
 # User Model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -332,126 +463,6 @@ def admin_toggle_admin(user_id):
     return redirect(url_for('admin_users'))
 
 if __name__ == '__main__':
-    with app.app_context():
-        try:
-            # Drop all tables and recreate them
-            db.drop_all()
-            db.create_all()
-            print("✅ Database tables created successfully")
-        except Exception as e:
-            print(f"❌ Error creating database tables: {e}")
-            # Try to create tables without dropping
-            try:
-                db.create_all()
-                print("✅ Database tables created (without dropping)")
-            except Exception as e2:
-                print(f"❌ Error creating database tables (second attempt): {e2}")
-                sys.exit(1)
-            
-            # Create admin user if not exists
-            admin_user = User.query.filter_by(username='admin').first()
-            if not admin_user:
-                admin_user = User(
-                    username='admin',
-                    email='admin@spedycjapro.pl',
-                    first_name='Administrator',
-                    last_name='Systemu',
-                    is_admin=True
-                )
-                admin_user.set_password('admin123')
-                db.session.add(admin_user)
-                db.session.commit()
-                print("✅ Admin user created: admin / admin123")
-        except Exception as e:
-            print(f"❌ Error initializing database: {e}")
-            db.session.rollback()
-        
-        # Create sample posts if none exist
-        try:
-            if Post.query.count() == 0:
-                sample_posts = [
-                    {
-                        'title': 'Optymalizacja tras transportowych w 2025 roku',
-                        'content': '''
-                        <h2>Wprowadzenie</h2>
-                        <p>W dobie rosnącej konkurencji i zmieniających się przepisów, optymalizacja tras jest kluczowa dla efektywności firm logistycznych.</p>
-                        
-                        <h2>Nowe technologie</h2>
-                        <p>Sztuczna inteligencja i machine learning rewolucjonizują sposób planowania tras. Algorytmy mogą teraz uwzględniać:</p>
-                        <ul>
-                            <li>Ruch drogowy w czasie rzeczywistym</li>
-                            <li>Warunki pogodowe</li>
-                            <li>Ograniczenia czasowe</li>
-                            <li>Koszty paliwa</li>
-                        </ul>
-                        
-                        <h2>Korzyści</h2>
-                        <p>Implementacja nowoczesnych rozwiązań może przynieść:</p>
-                        <ul>
-                            <li>Redukcję kosztów o 15-25%</li>
-                            <li>Skrócenie czasu dostawy o 20%</li>
-                            <li>Zmniejszenie emisji CO2</li>
-                            <li>Zwiększenie satysfakcji klientów</li>
-                        </ul>
-                        ''',
-                        'excerpt': 'W dobie rosnącej konkurencji i zmieniających się przepisów, optymalizacja tras jest kluczowa dla efektywności firm logistycznych.',
-                        'category': 'Optymalizacja',
-                        'tags': 'transport, optymalizacja, AI, logistyka',
-                        'image_url': 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=600&q=80',
-                        'is_published': True
-                    },
-                    {
-                        'title': 'Jak bezpiecznie przewozić ładunki niebezpieczne?',
-                        'content': '''
-                        <h2>Klasyfikacja ładunków niebezpiecznych</h2>
-                        <p>Ładunki niebezpieczne są klasyfikowane według 9 głównych klas zgodnie z przepisami ADR.</p>
-                        
-                        <h2>Wymagania prawne</h2>
-                        <p>Transport ładunków niebezpiecznych wymaga:</p>
-                        <ul>
-                            <li>Specjalnych uprawnień kierowcy</li>
-                            <li>Odpowiedniego oznakowania pojazdu</li>
-                            <li>Dokumentacji transportowej</li>
-                            <li>Ubezpieczenia odpowiedzialności cywilnej</li>
-                        </ul>
-                        
-                        <h2>Bezpieczeństwo</h2>
-                        <p>Kluczowe aspekty bezpieczeństwa:</p>
-                        <ul>
-                            <li>Prawidłowe pakowanie i oznakowanie</li>
-                            <li>Kontrola temperatury</li>
-                            <li>Monitoring GPS</li>
-                            <li>Plan awaryjny</li>
-                        </ul>
-                        ''',
-                        'excerpt': 'Transport ładunków niebezpiecznych wymaga przestrzegania surowych zasad oraz odpowiedniego przygotowania.',
-                        'category': 'Bezpieczeństwo',
-                        'tags': 'bezpieczeństwo, ADR, ładunki niebezpieczne',
-                        'image_url': 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80',
-                        'is_published': True
-                    }
-                ]
-                
-                for post_data in sample_posts:
-                    post = Post(
-                        title=post_data['title'],
-                        slug=post_data['title'].lower().replace(' ', '-').replace('ą', 'a').replace('ć', 'c').replace('ę', 'e').replace('ł', 'l').replace('ń', 'n').replace('ó', 'o').replace('ś', 's').replace('ź', 'z').replace('ż', 'z'),
-                        content=post_data['content'],
-                        excerpt=post_data['excerpt'],
-                        category=post_data['category'],
-                        tags=post_data['tags'],
-                        image_url=post_data['image_url'],
-                        author_id=admin_user.id,
-                        is_published=post_data['is_published']
-                    )
-                    db.session.add(post)
-                
-                db.session.commit()
-                print("✅ Sample posts created")
-        except Exception as e:
-            print(f"❌ Error creating sample posts: {e}")
-            db.session.rollback()
-    
     # Development
     if app.debug:
         app.run(debug=True, host='0.0.0.0', port=8000)
