@@ -425,6 +425,26 @@ def before_request():
         except Exception as e:
             print(f"❌ Error in before_request initialization: {e}")
 
+# --- AUTOINIT DB FOR RAILWAY ---
+try:
+    with app.app_context():
+        db.create_all()
+        # Tworzenie admina jeśli nie istnieje
+        if not User.query.filter_by(username='admin').first():
+            admin = User(username='admin', email='admin@example.com', is_admin=True)
+            admin.set_password('admin123')
+            db.session.add(admin)
+            db.session.commit()
+        # Dodaj przykładowe posty jeśli nie istnieją
+        if not Post.query.first():
+            post1 = Post(title='Jak wybrać odpowiedni środek transportu?', content='Przykładowa treść posta 1', author_id=admin.id, category='Transport')
+            post2 = Post(title='Optymalizacja procesów logistycznych', content='Przykładowa treść posta 2', author_id=admin.id, category='Logistyka')
+            db.session.add_all([post1, post2])
+            db.session.commit()
+    print('✅ DB auto-initialized (Railway fix)')
+except Exception as e:
+    print(f'❌ DB auto-init error: {e}')
+
 if __name__ == '__main__':
     # Development
     if app.debug:
